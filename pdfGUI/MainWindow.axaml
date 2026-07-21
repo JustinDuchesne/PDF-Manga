@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        d:DesignWidth="800"
+        d:DesignHeight="700"
+        Width="400"
+        Height="300"
+        x:Class="pdfGUI.MainWindow"
+        Title="pdfGUI">
+
+    <StackPanel>
+        <Border Margin="5" CornerRadius="10" Background="LightBlue">
+            <TextBlock Text="Make a pdf!"
+                       HorizontalAlignment="Center"
+                       FontSize="24"
+                       Margin="5"/>
+        </Border>
+        <Grid ShowGridLines="True" Margin="5" 
+              ColumnDefinitions="120, *"
+              RowDefinitions="Auto, Auto,Auto">
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">PDF name</TextBlock>
+            <TextBox Name="pdfName" Grid.Row="0" Grid.Column="1" Margin="0 5" Text="0"/>
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="10">inpoot folder</TextBlock>
+            <TextBox Name="inpoot" Grid.Row="1" Grid.Column="1" Margin="0 5" Text="0"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Margin="10">outpoot folder</TextBlock>
+            <TextBox Name="outpoot" Grid.Row="2" Grid.Column="1" Margin="0 5" Text="0"/>
+        </Grid>
+        <Button HorizontalAlignment="Center" Click="Button_OnClick">Calculate</Button>
+    </StackPanel>
+
+</Window>
