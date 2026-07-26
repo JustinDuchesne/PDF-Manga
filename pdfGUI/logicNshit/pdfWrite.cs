@@ -14,6 +14,11 @@ public class PdfWrite
     private string _outpoot { get; set; }
     private string _name { get; set; }
     public e_inkDevice _device { get; set; }
+    
+    //For progress tracker (the little bar smile :)
+    public int _currentProgress { get; set; } = 0;
+    public int _numberFiles { get; set; } = 0;
+    public float _percentage { get; set; } = 0;
 
 
     public PdfWrite()
@@ -22,6 +27,7 @@ public class PdfWrite
         _outpoot = "";
         _name = "";
         _device = e_inkDevice.Remarkable2;
+        computeTotalDirs();
     }
     
     public PdfWrite(string inpoot, string outpoot, string name, e_inkDevice device)
@@ -30,11 +36,13 @@ public class PdfWrite
         _outpoot = outpoot;
         _name = name;
         _device = device;
+        computeTotalDirs();
     }
 
     public void setInpoot(string inpoot)
     {
         _inpoot = inpoot;
+        computeTotalDirs();
     }
     public void setOutpoot(string outpoot)
     {
@@ -48,13 +56,22 @@ public class PdfWrite
     {
         _device = device;
     }
+    public void setCurrentProgress(int currentProgress)
+    {
+        _currentProgress = currentProgress;
+    }
+    public void setNumberFiles(int numberFiles)
+    {
+        _numberFiles = numberFiles;
+    }
+    
     
     
     public void Write()
     {
         PdfDocument document = new PdfDocument();
         
-        DirectoryInfo monRep = new DirectoryInfo(@$"{_inpoot}");
+        DirectoryInfo monRep = new DirectoryInfo(@$"{_inpoot}"); //@?
         
         DirectoryInfo[] mesFichiers = monRep.GetDirectories()
             .OrderBy(d => d.Name)
@@ -63,7 +80,8 @@ public class PdfWrite
         for (int i = 0; i < mesFichiers.Length; i++)
         {
             DirectoryInfo imageRep = new DirectoryInfo(mesFichiers[i].FullName);
-            FileInfo[] mesImages = imageRep.GetFiles("*.jpg");
+            FileInfo[] mesImages = imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png").ToArray();
+            computeProgress();
             for (int j = 0; j < mesImages.Length; j++)
             {
                 double ratio = 0;
@@ -74,7 +92,7 @@ public class PdfWrite
                 page.Height = EInkDeviceResolution.GetResolution(_device).Y;
                 
                 XGraphics gfx = XGraphics.FromPdfPage(page);
-                Console.WriteLine($"{mesImages[j]}");
+                //Console.WriteLine($"{mesImages[j]}");
                 XImage image = XImage.FromFile($"{mesImages[j]}");
                 
                 if (image.PixelHeight / image.PixelWidth < 0.9)
@@ -84,13 +102,7 @@ public class PdfWrite
                 {
                     gfx.RotateTransform(90);
 
-                    gfx.DrawImage(
-                        image,
-                        0,
-                        -page.Width,
-                        page.Height,
-                        page.Width
-                    );
+                    gfx.DrawImage( image, 0, -page.Width, page.Height, page.Width);
                 }
                 else
                 {
@@ -99,5 +111,22 @@ public class PdfWrite
             }
         }
         document.Save($"{_outpoot}/{_name}.pdf");
+    }
+
+    private void computeTotalDirs()
+    {
+        DirectoryInfo monRep = new DirectoryInfo(@$"{_inpoot}");
+        DirectoryInfo[] mesFichiers = monRep.GetDirectories()
+            .OrderBy(d => d.Name)
+            .ToArray();
+
+        setNumberFiles(mesFichiers.Count());
+    }
+
+    private void computeProgress()
+    {
+        setCurrentProgress(_currentProgress + 1);
+        _percentage = (float)_currentProgress / _numberFiles * 100;
+        Console.WriteLine($"{_percentage}%");
     }
 }

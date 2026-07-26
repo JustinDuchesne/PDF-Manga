@@ -19,6 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="gui\" />
+        <AvaloniaResource Include="ressources\**" />
     </ItemGroup>
 </Project>
