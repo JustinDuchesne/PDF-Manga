@@ -25,6 +25,10 @@ class Program
 #if DEBUG
             .WithDeveloperTools()
 #endif
+            .With(new X11PlatformOptions
+            {
+                UseDBusFilePicker = false
+            })
             .WithInterFont()
             .LogToTrace();
 }

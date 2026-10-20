@@ -22,14 +22,13 @@
               ColumnDefinitions="120, *"
               RowDefinitions="Auto, Auto,Auto">
             <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">PDF name</TextBlock>
-            <TextBox Name="pdfName" Grid.Row="0" Grid.Column="1" Margin="0 5" Text="0"/>
+            <TextBox Name="pdfName" Grid.Row="0" Grid.Column="1" Margin="0 5" Text=""/>
             <TextBlock Grid.Row="1" Grid.Column="0" Margin="10">inpoot folder</TextBlock>
-            <TextBox Name="inpoot" Grid.Row="1" Grid.Column="1" Margin="0 5" Text="0"/>
+            <Button Name="inpoot" Grid.Row="1" Grid.Column="1" Margin="0 5" Click="OpenFileButtonInput_Clicked">Select Folders</Button>
             <TextBlock Grid.Row="2" Grid.Column="0" Margin="10">outpoot folder</TextBlock>
-            <TextBox Name="outpoot" Grid.Row="2" Grid.Column="1" Margin="0 5" Text="0"/>
+            <Button Name="outpoot" Grid.Row="2" Grid.Column="1" Margin="0 5" Click="OpenFileButtonOutput_Clicked">Select Folder</Button>
         </Grid>
         <Button HorizontalAlignment="Center" Click="Button_OnClick">Calculate</Button>
-        <Button HorizontalAlignment="Center" Click="OpenFileButton_Clicked">Test</Button>
         
         <ProgressBar  Margin="5" Height="20"
                       Minimum="0" Maximum="100" Value="0"

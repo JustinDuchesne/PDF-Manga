@@ -13,6 +13,7 @@ namespace pdfGUI;
 public partial class MainWindow : Window
 {
     List<Uri> _folders = new List<Uri>();
+    private string output;
     private PdfWrite _pdf;
     
     private async void Button_OnClick(object? sender, RoutedEventArgs e)
@@ -23,7 +24,7 @@ public partial class MainWindow : Window
             ProgressBar.Value = percent;
         });
         
-        PdfWrite pdf = new PdfWrite(_folders, outpoot.Text, pdfName.Text, new Remarkable2());
+        PdfWrite pdf = new PdfWrite(_folders, output, pdfName.Text, new Remarkable2());
         await Task.Run(() => pdf.Write(progress));
     }
     public MainWindow()
@@ -32,7 +33,7 @@ public partial class MainWindow : Window
         _pdf = new PdfWrite();
     }
     
-    private async void OpenFileButton_Clicked(object sender, RoutedEventArgs args)
+    private async void OpenFileButtonInput_Clicked(object sender, RoutedEventArgs args)
     {
         // Get top level from the current control. Alternatively, you can use Window reference instead.
         var topLevel = TopLevel.GetTopLevel(this);
@@ -48,5 +49,21 @@ public partial class MainWindow : Window
             _folders.Add(folder.Path);
         }
         
+    }
+    
+    private async void OpenFileButtonOutput_Clicked(object sender, RoutedEventArgs args)
+    {
+        // Get top level from the current control. Alternatively, you can use Window reference instead.
+        var topLevel = TopLevel.GetTopLevel(this);
+
+        // Start async operation to open the dialog.
+        var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = "Open Text File",
+            AllowMultiple = false
+        });
+        if (folders.Count == 0) return;
+        
+        output = folders[0].Path.LocalPath;
     }
 }

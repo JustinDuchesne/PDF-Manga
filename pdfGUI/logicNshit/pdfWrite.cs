@@ -83,13 +83,14 @@ public class PdfWrite
         List<DirectoryInfo> monRepArray = new List<DirectoryInfo>();
         foreach (var path in _inpoot)
         {
-            monRepArray.Add(new DirectoryInfo(path.ToString()));
+            monRepArray.Add(new DirectoryInfo(path.LocalPath));
         }
         monRepArray = monRepArray.OrderBy(d => d.Name).ToList();
         
 
         foreach (var folder in monRepArray)
         {
+            Console.WriteLine(folder.FullName);
             DirectoryInfo imageRep = new DirectoryInfo(folder.FullName);
             List<FileInfo> mesImages = new List<FileInfo>(imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png" || f.Extension == ".webp")); 
             computeProgress(progress);
@@ -102,9 +103,10 @@ public class PdfWrite
                 page.Height = _device.resolution.Y;
                 
                 XGraphics gfx = XGraphics.FromPdfPage(page);
-                XImage image = XImage.FromFile($"{imageFile}");
+                Console.WriteLine($"{imageFile.FullName}");
+                XImage image = XImage.FromFile($"{imageFile.FullName}");
                 
-                if (image.PixelHeight / image.PixelWidth < 0.9)
+                if ((float)image.PixelHeight / image.PixelWidth < 0.9)
                     rotate = true;
 
                 if (rotate)
