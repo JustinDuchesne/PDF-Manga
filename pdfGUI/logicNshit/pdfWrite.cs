@@ -47,24 +47,6 @@ public class PdfWrite
         _device = device;
         computeTotalDirs();
     }
-
-    public void setInpoot(List<Uri> inpoot)
-    {
-        _inpoot = inpoot;
-        computeTotalDirs();
-    }
-    public void setOutpoot(string outpoot)
-    {
-        _outpoot = outpoot;
-    }
-    public void setName(string name)
-    {
-        _name = name;
-    }
-    public void setDevice(devices device)
-    {
-        _device = device;
-    }
     public void setCurrentProgress(int currentProgress)
     {
         _currentProgress = currentProgress;
@@ -109,58 +91,6 @@ public class PdfWrite
                 XGraphics gfx = XGraphics.FromPdfPage(page);
                 Console.WriteLine($"{imageFile.FullName}");
                 XImage image = XImage.FromFile($"{imageFile.FullName}");
-                
-                if ((float)image.PixelHeight / image.PixelWidth < 0.9)
-                    rotate = true;
-
-                if (rotate)
-                {
-                    gfx.RotateTransform(90);
-                    gfx.DrawImage( image, 0, -page.Width, page.Height, page.Width);
-                }
-                else
-                {
-                    gfx.DrawImage(image, 0, 0, page.Width, page.Height);   
-                }
-            }
-        }
-        document.Save($"{_outpoot}/{_name}.pdf");
-        stopwatch.Stop();
-        Console.WriteLine("Write 2" + stopwatch.ElapsedMilliseconds);
-    }
-    
-    public void Write2(IProgress<int> progress)
-    {
-        if (!CanPdfWrite()) return;
-        
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
-        
-        progress.Report(Convert.ToInt32(0));
-        PdfDocument document = new PdfDocument();
-
-        List<DirectoryInfo> monRepArray = new List<DirectoryInfo>();
-        foreach (var path in _inpoot)
-        {
-            monRepArray.Add(new DirectoryInfo(path.LocalPath));
-        }
-        DirectoryInfo[] mesFichiers = monRepArray.OrderBy(d => d.Name).ToArray();
-        
-        for (int i = 0; i < mesFichiers.Length; i++)
-        {
-            DirectoryInfo imageRep = new DirectoryInfo(mesFichiers[i].FullName);
-            FileInfo[] mesImages = imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png" || f.Extension == ".webp").ToArray();
-            computeProgress(progress);
-            for (int j = 0; j < mesImages.Length; j++)
-            {
-                bool rotate = false;
-                PdfPage page = document.AddPage();
-
-                page.Width = _device.resolution.X;
-                page.Height = _device.resolution.Y;
-                
-                XGraphics gfx = XGraphics.FromPdfPage(page);
-                XImage image = XImage.FromFile($"{mesImages[j]}");
                 
                 if ((float)image.PixelHeight / image.PixelWidth < 0.9)
                     rotate = true;

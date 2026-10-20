@@ -14,7 +14,6 @@ public partial class MainWindow : Window
 {
     List<Uri> _folders = new List<Uri>();
     private string output;
-    private PdfWrite _pdf;
     
     private async void Button_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -25,13 +24,13 @@ public partial class MainWindow : Window
         });
         
         PdfWrite pdf = new PdfWrite(_folders, output, pdfName.Text, new Remarkable2());
-        //await Task.Run(() => pdf.Write(progress));
-        await Task.Run(() => pdf.Write2(progress));
+        await Task.Run(() => pdf.Write(progress));
+        //await Task.Run(() => pdf.Write2(progress));
     }
     public MainWindow()
     {
         InitializeComponent();
-        _pdf = new PdfWrite();
+        //_pdf = new PdfWrite();
     }
     
     private async void OpenFileButtonInput_Clicked(object sender, RoutedEventArgs args)
