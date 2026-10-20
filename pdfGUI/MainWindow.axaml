@@ -18,7 +18,7 @@
                        FontSize="24"
                        Margin="5"/>
         </Border>
-        <Grid ShowGridLines="True" Margin="5" 
+        <Grid ShowGridLines="False" Margin="5" 
               ColumnDefinitions="120, *"
               RowDefinitions="Auto, Auto,Auto">
             <TextBlock Grid.Row="0" Grid.Column="0" Margin="10">PDF name</TextBlock>
@@ -29,8 +29,9 @@
             <TextBox Name="outpoot" Grid.Row="2" Grid.Column="1" Margin="0 5" Text="0"/>
         </Grid>
         <Button HorizontalAlignment="Center" Click="Button_OnClick">Calculate</Button>
+        <Button HorizontalAlignment="Center" Click="OpenFileButton_Clicked">Test</Button>
         
-        <ProgressBar  Margin="0 10" Height="20"
+        <ProgressBar  Margin="5" Height="20"
                       Minimum="0" Maximum="100" Value="0"
                       ShowProgressText="True" Name="ProgressBar"/>
     </StackPanel>

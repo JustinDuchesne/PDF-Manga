@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using pdfGUI.e_inkDevices;
 
 namespace pdfGUI;
 using System;
@@ -11,10 +13,10 @@ using System.IO;
 
 public class PdfWrite
 {
-    private string _inpoot { get; set; }
+    List<Uri> _inpoot = new List<Uri>();
     private string _outpoot { get; set; }
     private string _name { get; set; }
-    public e_inkDevice _device { get; set; }
+    public devices _device { get; set; }
     
     //For progress tracker (the little bar smile :)
     public int _currentProgress { get; set; } = 0;
@@ -25,14 +27,18 @@ public class PdfWrite
 
     public PdfWrite()
     {
-        _inpoot = "";
-        _outpoot = "";
-        _name = "";
-        _device = e_inkDevice.Remarkable2;
+        _device = new Remarkable2();
         computeTotalDirs();
     }
+
+    public bool CanPdfWrite()
+    {
+        if (_inpoot.Count == 0)
+            return false;
+        return true;
+    }
     
-    public PdfWrite(string inpoot, string outpoot, string name, e_inkDevice device)
+    public PdfWrite(List<Uri> inpoot, string outpoot, string name, devices device)
     {
         _inpoot = inpoot;
         _outpoot = outpoot;
@@ -41,7 +47,7 @@ public class PdfWrite
         computeTotalDirs();
     }
 
-    public void setInpoot(string inpoot)
+    public void setInpoot(List<Uri> inpoot)
     {
         _inpoot = inpoot;
         computeTotalDirs();
@@ -54,7 +60,7 @@ public class PdfWrite
     {
         _name = name;
     }
-    public void setDevice(e_inkDevice device)
+    public void setDevice(devices device)
     {
         _device = device;
     }
@@ -69,29 +75,34 @@ public class PdfWrite
     
     public void Write(IProgress<int> progress)
     {
+        if (!CanPdfWrite()) return;
+        
         progress.Report(Convert.ToInt32(0));
         PdfDocument document = new PdfDocument();
-        DirectoryInfo monRep = new DirectoryInfo(@$"{_inpoot}");
-        DirectoryInfo[] mesFichiers = monRep.GetDirectories()
-                                            .OrderBy(d => d.Name)
-                                            .ToArray();
-        
-        for (int i = 0; i < mesFichiers.Length; i++)
+
+        List<DirectoryInfo> monRepArray = new List<DirectoryInfo>();
+        foreach (var path in _inpoot)
         {
-            DirectoryInfo imageRep = new DirectoryInfo(mesFichiers[i].FullName);
-            FileInfo[] mesImages = imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png" || f.Extension == ".webp").ToArray();
+            monRepArray.Add(new DirectoryInfo(path.ToString()));
+        }
+        monRepArray = monRepArray.OrderBy(d => d.Name).ToList();
+        
+
+        foreach (var folder in monRepArray)
+        {
+            DirectoryInfo imageRep = new DirectoryInfo(folder.FullName);
+            List<FileInfo> mesImages = new List<FileInfo>(imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png" || f.Extension == ".webp")); 
             computeProgress(progress);
-            for (int j = 0; j < mesImages.Length; j++)
+            foreach (var imageFile in mesImages)
             {
                 bool rotate = false;
                 PdfPage page = document.AddPage();
 
-                page.Width = EInkDeviceResolution.GetResolution(_device).X;
-                page.Height = EInkDeviceResolution.GetResolution(_device).Y;
+                page.Width = _device.resolution.X;
+                page.Height = _device.resolution.Y;
                 
                 XGraphics gfx = XGraphics.FromPdfPage(page);
-                XImage image = XImage.FromFile($"{mesImages[j]}");
-                //Console.WriteLine($"{mesImages[j]}");
+                XImage image = XImage.FromFile($"{imageFile}");
                 
                 if (image.PixelHeight / image.PixelWidth < 0.9)
                     rotate = true;
@@ -112,12 +123,7 @@ public class PdfWrite
 
     private void computeTotalDirs()
     {
-        DirectoryInfo monRep = new DirectoryInfo(@$"{_inpoot}");
-        DirectoryInfo[] mesFichiers = monRep.GetDirectories()
-            .OrderBy(d => d.Name)
-            .ToArray();
-
-        setNumberFiles(mesFichiers.Count());
+        setNumberFiles(_inpoot.Count);
     }
 
     public void computeProgress(IProgress<int> progress)
