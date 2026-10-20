@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace pdfGUI;
 using System;
@@ -18,6 +19,7 @@ public class PdfWrite
     //For progress tracker (the little bar smile :)
     public int _currentProgress { get; set; } = 0;
     public int _numberFiles { get; set; } = 0;
+    
     public float _percentage { get; set; } = 0;
 
 
@@ -65,26 +67,22 @@ public class PdfWrite
         _numberFiles = numberFiles;
     }
     
-    
-    
-    public void Write()
+    public void Write(IProgress<int> progress)
     {
+        progress.Report(Convert.ToInt32(0));
         PdfDocument document = new PdfDocument();
-        
-        DirectoryInfo monRep = new DirectoryInfo(@$"{_inpoot}"); //@?
-        
+        DirectoryInfo monRep = new DirectoryInfo(@$"{_inpoot}");
         DirectoryInfo[] mesFichiers = monRep.GetDirectories()
-            .OrderBy(d => d.Name)
-            .ToArray();
+                                            .OrderBy(d => d.Name)
+                                            .ToArray();
         
         for (int i = 0; i < mesFichiers.Length; i++)
         {
             DirectoryInfo imageRep = new DirectoryInfo(mesFichiers[i].FullName);
-            FileInfo[] mesImages = imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png").ToArray();
-            computeProgress();
+            FileInfo[] mesImages = imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png" || f.Extension == ".webp").ToArray();
+            computeProgress(progress);
             for (int j = 0; j < mesImages.Length; j++)
             {
-                double ratio = 0;
                 bool rotate = false;
                 PdfPage page = document.AddPage();
 
@@ -92,8 +90,8 @@ public class PdfWrite
                 page.Height = EInkDeviceResolution.GetResolution(_device).Y;
                 
                 XGraphics gfx = XGraphics.FromPdfPage(page);
-                //Console.WriteLine($"{mesImages[j]}");
                 XImage image = XImage.FromFile($"{mesImages[j]}");
+                //Console.WriteLine($"{mesImages[j]}");
                 
                 if (image.PixelHeight / image.PixelWidth < 0.9)
                     rotate = true;
@@ -101,7 +99,6 @@ public class PdfWrite
                 if (rotate)
                 {
                     gfx.RotateTransform(90);
-
                     gfx.DrawImage( image, 0, -page.Width, page.Height, page.Width);
                 }
                 else
@@ -123,10 +120,11 @@ public class PdfWrite
         setNumberFiles(mesFichiers.Count());
     }
 
-    private void computeProgress()
+    public void computeProgress(IProgress<int> progress)
     {
         setCurrentProgress(_currentProgress + 1);
         _percentage = (float)_currentProgress / _numberFiles * 100;
-        Console.WriteLine($"{_percentage}%");
+        progress.Report(Convert.ToInt32(_percentage));
+        
     }
 }
