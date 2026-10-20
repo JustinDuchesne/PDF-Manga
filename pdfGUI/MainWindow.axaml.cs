@@ -25,7 +25,8 @@ public partial class MainWindow : Window
         });
         
         PdfWrite pdf = new PdfWrite(_folders, output, pdfName.Text, new Remarkable2());
-        await Task.Run(() => pdf.Write(progress));
+        //await Task.Run(() => pdf.Write(progress));
+        await Task.Run(() => pdf.Write2(progress));
     }
     public MainWindow()
     {
