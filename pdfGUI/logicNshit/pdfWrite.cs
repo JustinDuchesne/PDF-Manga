@@ -89,18 +89,20 @@ public class PdfWrite
                 XGraphics gfx = XGraphics.FromPdfPage(page);
                 Console.WriteLine($"{imageFile.FullName}");
                 XImage image = XImage.FromFile($"{imageFile.FullName}");
-                
-                if ((float)image.PixelHeight / image.PixelWidth < 0.9)
+
+                float ratio = (float)image.PixelHeight / image.PixelWidth;
+                if (ratio < 0.9)
                     rotate = true;
 
                 if (rotate)
                 {
                     gfx.RotateTransform(90);
-                    gfx.DrawImage( image, 0, -page.Width, page.Height, page.Width); //image.PixelHeight
+                    gfx.DrawImage( image, 0, -page.Width / 1.2f, page.Height, image.PixelHeight * (page.Width / image.PixelWidth )); //(page.Height - image.PixelHeight)/3    -page.Width
                 }
                 else
                 {
-                    gfx.DrawImage(image, 0, 0, page.Width, page.Height);   
+                    Console.WriteLine((float)( (image.PixelHeight / page.Height)));
+                    gfx.DrawImage(image, (page.Width - image.PixelWidth)/3, 0, image.PixelWidth * (page.Height / image.PixelHeight ), page.Height);   
                 }
             }
         }
