@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using pdfGUI.e_inkDevices;
+using pdfGUI.logicNshit.e_inkDevices;
 
 namespace pdfGUI;
 using System;
@@ -22,7 +24,6 @@ public class PdfWrite
     //For progress tracker (the little bar smile :)
     public int _currentProgress { get; set; } = 0;
     public int _numberFiles { get; set; } = 0;
-    
     public float _percentage { get; set; } = 0;
 
 
@@ -60,9 +61,6 @@ public class PdfWrite
     {
         if (!CanPdfWrite()) return;
         
-        Stopwatch stopwatch = new Stopwatch();
-        stopwatch.Start();
-        
         progress.Report(Convert.ToInt32(0));
         PdfDocument document = new PdfDocument();
 
@@ -71,7 +69,7 @@ public class PdfWrite
         {
             monRepArray.Add(new DirectoryInfo(path.LocalPath));
         }
-        monRepArray = monRepArray.OrderBy(d => d.Name).ToList();
+        monRepArray = monRepArray.OrderBy( file => Regex.Replace(file.Name, @"\d+", match => match.Value.PadLeft(4, '0'))).ToList();
         
 
         foreach (var folder in monRepArray)
@@ -98,7 +96,7 @@ public class PdfWrite
                 if (rotate)
                 {
                     gfx.RotateTransform(90);
-                    gfx.DrawImage( image, 0, -page.Width, page.Height, page.Width);
+                    gfx.DrawImage( image, 0, -page.Width, page.Height, page.Width); //image.PixelHeight
                 }
                 else
                 {
@@ -107,8 +105,6 @@ public class PdfWrite
             }
         }
         document.Save($"{_outpoot}/{_name}.pdf");
-        stopwatch.Stop();
-        Console.WriteLine("Write 2" + stopwatch.ElapsedMilliseconds);
     }
 
     private void computeTotalDirs()

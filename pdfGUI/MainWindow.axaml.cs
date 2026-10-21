@@ -7,6 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using pdfGUI.e_inkDevices;
+using pdfGUI.logicNshit.e_inkDevices;
 
 namespace pdfGUI;
 
@@ -14,6 +15,13 @@ public partial class MainWindow : Window
 {
     List<Uri> _folders = new List<Uri>();
     private string output;
+    
+    public List<devices> Devices { get; } = new()
+    {
+        new Remarkable2(), new RemarkablePaperPro(), new TabS9Fe()
+    };
+
+    public devices _selectedDevice { get; set; } = new Remarkable2();
     
     private async void Button_OnClick(object? sender, RoutedEventArgs e)
     {
@@ -23,22 +31,18 @@ public partial class MainWindow : Window
             ProgressBar.Value = percent;
         });
         
-        PdfWrite pdf = new PdfWrite(_folders, output, pdfName.Text, new Remarkable2());
+        PdfWrite pdf = new PdfWrite(_folders, output, pdfName.Text, _selectedDevice);
         await Task.Run(() => pdf.Write(progress));
-        //await Task.Run(() => pdf.Write2(progress));
     }
     public MainWindow()
     {
         InitializeComponent();
-        //_pdf = new PdfWrite();
     }
     
     private async void OpenFileButtonInput_Clicked(object sender, RoutedEventArgs args)
     {
-        // Get top level from the current control. Alternatively, you can use Window reference instead.
         var topLevel = TopLevel.GetTopLevel(this);
-
-        // Start async operation to open the dialog.
+        
         var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = "Open Text File",
@@ -53,10 +57,8 @@ public partial class MainWindow : Window
     
     private async void OpenFileButtonOutput_Clicked(object sender, RoutedEventArgs args)
     {
-        // Get top level from the current control. Alternatively, you can use Window reference instead.
         var topLevel = TopLevel.GetTopLevel(this);
-
-        // Start async operation to open the dialog.
+        
         var folders = await topLevel.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
         {
             Title = "Open Text File",
