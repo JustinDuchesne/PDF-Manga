@@ -8,7 +8,7 @@ public class TabS9Fe : devices
     {
         get;
         set;
-    } = new Vector2(2304, 1440);
+    } = new Vector2(1440, 2304);
 
     public override string name { get; set; } =  "Tab S9 Fe";
 }

@@ -87,7 +87,6 @@ public class PdfWrite
                 page.Height = _device.resolution.Y;
                 
                 XGraphics gfx = XGraphics.FromPdfPage(page);
-                Console.WriteLine($"{imageFile.FullName}");
                 XImage image = XImage.FromFile($"{imageFile.FullName}");
 
                 float ratio = (float)image.PixelHeight / image.PixelWidth;
@@ -97,12 +96,18 @@ public class PdfWrite
                 if (rotate)
                 {
                     gfx.RotateTransform(90);
-                    gfx.DrawImage( image, 0, -page.Width / 1.2f, page.Height, image.PixelHeight * (page.Width / image.PixelWidth )); //(page.Height - image.PixelHeight)/3    -page.Width
+                    
+                    gfx.DrawImage(image, 0, -page.Width, image.PixelWidth * ((float)page.Width / image.PixelHeight), image.PixelWidth / ((float)page.Height / image.PixelHeight )); 
+                    //gfx.DrawImage(image, 0, -page.Width, page.Height, image.PixelWidth / ((float)page.Height / image.PixelHeight )); 
+                    //gfx.DrawImage( image, (page.Height - image.PixelHeight * ((float)page.Width / image.PixelWidth)) / 2, -(page.Height - image.PixelHeight * ((float)page.Width / image.PixelWidth)) / 2, page.Height, image.PixelHeight * (page.Width / image.PixelWidth )); 
+                    //gfx.DrawImage(image,  (page.Width - image.PixelWidth * ((float)page.Height / image.PixelHeight)) / 2, 0, image.PixelWidth * ((float)page.Height / image.PixelHeight), page.Height); 
+                    //gfx.DrawImage( image, 0, -page.Width / 1.2f, page.Height, image.PixelHeight * (page.Width / image.PixelWidth )); //(page.Height - image.PixelHeight)/3    -page.Width
                 }
                 else
                 {
-                    Console.WriteLine((float)( (image.PixelHeight / page.Height)));
-                    gfx.DrawImage(image, (page.Width - image.PixelWidth)/3, 0, image.PixelWidth * (page.Height / image.PixelHeight ), page.Height);   
+                    //gfx.DrawImage(image, (page.Width - image.PixelWidth)/3, 0, image.PixelWidth * (page.Height / image.PixelHeight ), page.Height); 
+                    //gfx.DrawImage(image, (image.PixelWidth * ((float)page.Height / image.PixelHeight) - page.Width) / 2, 0, image.PixelWidth * ((float)page.Height / image.PixelHeight), page.Height); 
+                    gfx.DrawImage(image,  (page.Width - image.PixelWidth * ((float)page.Height / image.PixelHeight)) / 2, 0, image.PixelWidth * ((float)page.Height / image.PixelHeight), page.Height); 
                 }
             }
         }
@@ -119,6 +124,5 @@ public class PdfWrite
         setCurrentProgress(_currentProgress + 1);
         _percentage = (float)_currentProgress / _numberFiles * 100;
         progress.Report(Convert.ToInt32(_percentage));
-        
     }
 }
