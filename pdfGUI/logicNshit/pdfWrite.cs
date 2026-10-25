@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -57,6 +57,8 @@ public class PdfWrite
         _numberFiles = numberFiles;
     }
     
+    
+    
     public void Write(IProgress<int> progress)
     {
         if (!CanPdfWrite()) return;
@@ -94,15 +96,6 @@ public class PdfWrite
                 double startX = (page.Width - image.PixelWidth * ((float)page.Height / image.PixelHeight)) / 2;
                 double startY = 0;
                 
-                float Ratio = (float)image.PixelHeight / image.PixelWidth;
-                if (Ratio < 1)
-                {
-                    //rotate = true;
-                    gfx.RotateTransform(90);
-                    startX = 0;
-                    startY = -page.Width;
-                }
-                
                 double width = Math.Min(
                     page.Height * ((float)image.PixelWidth / image.PixelHeight),
                     page.Width
@@ -112,6 +105,23 @@ public class PdfWrite
                     page.Height
                 );
                 
+                float Ratio = (float)image.PixelHeight / image.PixelWidth;
+                if (Ratio < 1)
+                {
+                    //rotate = true;
+                    gfx.RotateTransform(90);
+                    startX = 0;
+                    startY = -page.Width;
+                    width = Math.Min(
+                        page.Width * ((float)image.PixelWidth  / image.PixelHeight),
+                        page.Height
+                    );
+                    height =  Math.Min(
+                        page.Height * ((float)image.PixelHeight / image.PixelWidth),
+                        page.Width
+                    );
+                }
+                
                 gfx.DrawImage(
                     image,
                     startX,
@@ -119,6 +129,14 @@ public class PdfWrite
                     width, 
                     height
                 );
+                
+                Console.WriteLine($"Height: {height}");
+                Console.WriteLine($"Width: {width}");
+                Console.WriteLine($"Page Height: {page.Height}");
+                Console.WriteLine($"Page Width: {page.Width}");
+                Console.WriteLine($"Image Height: {image.PixelHeight}");
+                Console.WriteLine($"Image Width: {image.PixelWidth}");
+                Console.WriteLine($"");
                 
                 /*
                 if (rotate)
