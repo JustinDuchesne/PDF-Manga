@@ -95,9 +95,9 @@ public class PdfWrite
                 double startY = 0;
                 
                 float Ratio = (float)image.PixelHeight / image.PixelWidth;
-                if (Ratio < 0.9)
+                if (Ratio < 1)
                 {
-                    rotate = true;
+                    //rotate = true;
                     gfx.RotateTransform(90);
                     startX = 0;
                     startY = -page.Width;
@@ -112,10 +112,9 @@ public class PdfWrite
                     page.Height
                 );
                 
-                
                 gfx.DrawImage(
                     image,
-                    startX,  //(page.Width - image.PixelWidth * ((float)page.Height / image.PixelHeight)) / 2
+                    startX,
                     startY, 
                     width, 
                     height
