@@ -10,5 +10,5 @@ public class Remarkable2 : devices
         set;
     } = new Vector2(1404, 1872);
 
-    public override string name { get; set; } =  "Remarkable2";
+    public override string name { get; set; } =  "Remarkable 2";
 }

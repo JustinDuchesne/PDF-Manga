@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using pdfGUI.e_inkDevices;
 using pdfGUI.logicNshit.e_inkDevices;
-
 namespace pdfGUI;
 
 public partial class MainWindow : Window
@@ -18,7 +15,13 @@ public partial class MainWindow : Window
     
     public List<devices> Devices { get; } = new()
     {
-        new Remarkable2(), new RemarkablePaperPro(), new TabS9Fe()
+        new Remarkable2(), 
+        new RemarkablePaperPro(),
+        new RemarkablePaperProMove(), 
+        new RemarkablePaperPure(), 
+        new KindleScribeColorsoft(), 
+        new SupernoteManta(),
+        new TabS9Fe(),
     };
 
     public devices _selectedDevice { get; set; } = new Remarkable2();
