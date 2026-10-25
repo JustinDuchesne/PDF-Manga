@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using pdfGUI.e_inkDevices;
 using pdfGUI.logicNshit.e_inkDevices;
-
-namespace pdfGUI;
+using SixLabors.ImageSharp;
 using System;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing;
-
 using System.IO;
+
+namespace pdfGUI;
 
 public class PdfWrite
 {
@@ -58,7 +55,6 @@ public class PdfWrite
     }
     
     
-    
     public void Write(IProgress<int> progress)
     {
         if (!CanPdfWrite()) return;
@@ -76,11 +72,11 @@ public class PdfWrite
 
         foreach (var folder in monRepArray)
         {
-            Console.WriteLine(folder.FullName);
             DirectoryInfo imageRep = new DirectoryInfo(folder.FullName);
             List<FileInfo> mesImages = new List<FileInfo>(imageRep.GetFiles().Where(f => f.Extension == ".jpg" || f.Extension == ".jpeg" || f.Extension == ".png" || f.Extension == ".webp")); 
             mesImages = mesImages.OrderBy( file => Regex.Replace(file.Name, @"\d+", match => match.Value.PadLeft(4, '0'))).ToList();
             computeProgress(progress);
+            
             foreach (var imageFile in mesImages)
             {
                 PdfPage page = document.AddPage();
@@ -89,11 +85,25 @@ public class PdfWrite
                 page.Height = _device.resolution.Y;
                 
                 XGraphics gfx = XGraphics.FromPdfPage(page);
-                XImage image = XImage.FromFile($"{imageFile.FullName}");
+                XImage image;
+
+                if (imageFile.Extension == ".webp")
+                { 
+                    Image imageWebp = Image.Load($"{imageFile.FullName}");
+                    var stream = new MemoryStream();
+                    imageWebp.SaveAsJpeg(stream);
+                    stream.Position = 0;
+                    image = XImage.FromStream(stream);
+                    imageWebp.Dispose();
+                }
+                else
+                {
+                    image = XImage.FromFile($"{imageFile.FullName}");    
+                }
                 
                 double startX = Math.Max(
                     (page.Width - image.PixelWidth * ((float)page.Height / image.PixelHeight)) / 2,
-                    0
+                      0
                 );
                 double startY = 0;
                 
