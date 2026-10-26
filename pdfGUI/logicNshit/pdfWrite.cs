@@ -3,11 +3,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using pdfGUI.e_inkDevices;
 using pdfGUI.logicNshit.e_inkDevices;
-using SixLabors.ImageSharp;
 using System;
 using PdfSharp.Pdf;
 using PdfSharp.Drawing;
 using System.IO;
+using ImageMagick;
 
 namespace pdfGUI;
 
@@ -89,9 +89,10 @@ public class PdfWrite
 
                 if (imageFile.Extension == ".webp")
                 { 
-                    Image imageWebp = Image.Load($"{imageFile.FullName}");
+                    MagickImage imageWebp = new MagickImage(imageFile.FullName);
                     var stream = new MemoryStream();
-                    imageWebp.SaveAsJpeg(stream);
+                    imageWebp.Format = MagickFormat.Jpeg;
+                    imageWebp.Write(stream);
                     stream.Position = 0;
                     image = XImage.FromStream(stream);
                     imageWebp.Dispose();
@@ -139,7 +140,7 @@ public class PdfWrite
                     height
                 );
                 
-                
+                /*
                 Console.WriteLine($"{imageFile.Name}");
                 Console.WriteLine($"Height: {height}");
                 Console.WriteLine($"Width: {width}");
@@ -148,7 +149,7 @@ public class PdfWrite
                 Console.WriteLine($"Image Height: {image.PixelHeight}");
                 Console.WriteLine($"Image Width: {image.PixelWidth}");
                 Console.WriteLine($"");
-                
+                */
             }
         }
         document.Save($"{_outpoot}/{_name}.pdf");
