@@ -118,9 +118,9 @@ public class PdfWrite
                 
                 if ((float)image.PixelHeight / image.PixelWidth < 1)
                 {
-                    gfx.RotateTransform(90);
-                    startX = 0;
-                    startY = -page.Width;
+                    gfx.RotateTransform(270);
+                    startX = -page.Height;
+                    startY = 0;
                     width = Math.Min(
                         page.Width * ((float)image.PixelWidth  / image.PixelHeight),
                         page.Height
@@ -139,7 +139,7 @@ public class PdfWrite
                     height
                 );
                 
-                /*
+                
                 Console.WriteLine($"{imageFile.Name}");
                 Console.WriteLine($"Height: {height}");
                 Console.WriteLine($"Width: {width}");
@@ -148,7 +148,7 @@ public class PdfWrite
                 Console.WriteLine($"Image Height: {image.PixelHeight}");
                 Console.WriteLine($"Image Width: {image.PixelWidth}");
                 Console.WriteLine($"");
-                */
+                
             }
         }
         document.Save($"{_outpoot}/{_name}.pdf");
